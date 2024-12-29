@@ -43,12 +43,16 @@
             top: 10px;
         }
 
+        .btn-mobile .btn {
+            margin-left: 5px;
+        }
+
         .not-show-comment {
             display: none;
         }
 
         @media screen and (min-width: 840px) {
-            .btn-mobile{
+            .btn-mobile {
                 display: none;
             }
         }
@@ -72,7 +76,14 @@
                 <a href="{{urlfor "DocumentController.Index" ":key" .Model.Identify}}" title="{{.Model.BookName}}" class="book-title">{{.Model.BookName}}</a>
                 <span style="font-size: 12px;font-weight: 100;"></span>
             </div>
-            <a href="{{urlfor "HomeController.Index"}}" class="btn btn-default btn-mobile"> <i class="fa fa-home" aria-hidden="true"></i> {{i18n .Lang "common.home"}}</a>
+            <div class="btn-group btn-mobile">
+                <a href="{{urlfor "HomeController.Index"}}" class="btn btn-default"> <i class="fa fa-home" aria-hidden="true"></i> {{i18n .Lang "common.home"}}</a>
+                {{if gt .Member.MemberId 0}}
+                {{if eq .Model.RoleId 0 1 2}}
+                <a href="{{urlfor "DocumentController.Edit" ":key" .Model.Identify ":id" .DocumentId}}" class="btn btn-danger"><i class="fa fa-edit" aria-hidden="true"></i></a>
+                {{end}}
+                {{end}}
+            </div>
             <div class="navbar-header pull-right manual-menu">
                 <div class="dropdown pull-left" style="margin-right: 10px;">
                     <a href="{{urlfor "HomeController.Index"}}" class="btn btn-default"><i class="fa fa-home" aria-hidden="true"></i> {{i18n .Lang "common.home"}}</a>

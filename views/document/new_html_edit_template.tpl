@@ -89,10 +89,6 @@
         .editor-group .editor-item,.editor-group .editor-item-select>.ql-picker-label{
             float: left;
             display: inline-block;
-            min-width: 34px;
-            height: 30px !important;
-            padding: 5px;
-            line-height: 30px;
             text-align: center;
             color: #4b4b4b;
             border-top: 1px solid #ccc !important;
@@ -100,7 +96,7 @@
             border-bottom: 1px solid #ccc !important;
             background: #fff;
             border-radius: 0;
-            font-size: 12px
+            font-size: 14px
         }
         .ql-snow .ql-picker.ql-expanded .ql-picker-options{
             margin-top: 5px;
@@ -189,6 +185,174 @@
             font-family: icomoon,Helvetica,Arial,sans-serif;
             font-style: normal;
         }
+
+        /* 基础布局 */
+        .m-manual.manual-editor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        /* 工具栏 */
+        .manual-head {
+            position: relative;
+            width: 100%;
+            height: 45px;
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 5px;
+            z-index: 1010;
+        }
+
+        /* 工具栏滚动容器 */
+        #editormd-tools {
+            position: relative;
+            white-space: nowrap;
+            display: inline-flex;
+            align-items: center;
+            min-width: auto !important;
+            overflow-x: auto;
+            overflow-y: hidden;
+            -webkit-overflow-scrolling: touch;
+            /* 隐藏默认滚动条 */
+            scrollbar-width: none; /* Firefox */
+            -ms-overflow-style: none;  /* IE and Edge */
+        }
+
+        /* 隐藏 Webkit 浏览器的默认滚动条 */
+        #editormd-tools::-webkit-scrollbar {
+            display: none;
+        }
+
+        /* 自定义滚动条轨道 - 仅在悬停时显示 */
+        #editormd-tools:hover {
+            scrollbar-width: thin;
+            -ms-overflow-style: -ms-autohiding-scrollbar;
+        }
+
+        #editormd-tools:hover::-webkit-scrollbar {
+            display: block;
+            height: 4px;
+        }
+
+        #editormd-tools:hover::-webkit-scrollbar-track {
+            background: #f1f1f1;
+            border-radius: 2px;
+        }
+
+        #editormd-tools:hover::-webkit-scrollbar-thumb {
+            background: #888;
+            border-radius: 2px;
+        }
+
+        #editormd-tools:hover::-webkit-scrollbar-thumb:hover {
+            background: #555;
+        }
+
+        .editor-group {
+            display: inline-flex;
+            align-items: center;
+            white-space: nowrap;
+            margin-right: 10px;
+        }
+
+        .editor-group.ql-formats {
+            display: inline-flex !important;
+            white-space: nowrap !important;
+            float: none !important;            
+            vertical-align: middle;
+        }
+
+        .editor-group .ql-picker-options {
+            position: fixed !important;
+            top: 45px !important;
+            left: 0;
+            right: 280px;
+        }
+
+        .editor-group.ql-formats .ql-picker-options {
+            position: fixed;
+            top: 45px !important;
+            left: 0;
+            right: 0;
+            background: #fff;
+            border-top: none;
+        }
+
+        /* 主体内容区 */
+        .manual-body {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 45px;
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        .manual-category {
+            position: absolute;
+            width: 280px;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            overflow: auto;
+            transition: left 0.3s;
+            z-index: 1000;
+        }
+
+        .manual-editor-container {
+            position: absolute;
+            top: 0;
+            left: 280px;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+            transition: left 0.3s;
+        }
+        
+        /* 移动端样式 */
+        @media screen and (max-width: 840px) {
+            .manual-category {
+                position: fixed;
+                left: -280px;
+            }
+
+            .manual-category.show {
+                left: 0;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+            }
+
+            .manual-editor-container {
+                left: 0;
+                min-width: auto !important;
+            }
+
+            /* 目录切换按钮 */
+            #category-toggle {
+                position: fixed;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 1001;
+                padding: 8px;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-left: none;
+                border-radius: 0 4px 4px 0;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+                transition: left 0.3s;
+            }
+
+            #category-toggle.show {
+                left: 280px;
+            }
+        }
     </style>
 </head>
 <body>
@@ -242,13 +406,15 @@
             <select data-toggle="tooltip" data-title="{{i18n .Lang "doc.font_color"}}" class="ql-color ql-picker ql-color-picker editor-item-select" ></select>
             <select data-toggle="tooltip" data-title="{{i18n .Lang "doc.bg_color"}}" class="ql-background editor-item-select"></select>
             <a href="javascript:;" data-toggle="tooltip" data-title="{{i18n .Lang "doc.attachment"}}" id="btnUploadFile"><i class="fa fa-paperclip last" aria-hidden="true" name="attachment"></i></a>
-
         </div>
 
         <div class="clearfix"></div>
     </div>
     <div class="manual-body">
-        <div class="manual-category" id="manualCategory" style=" border-right: 1px solid #DDDDDD;width: 281px;position: absolute;">
+        <button id="category-toggle" class="btn btn-default btn-sm">
+            <i class="fa fa-angle-right"></i>
+        </button>
+        <div class="manual-category" id="manualCategory">
             <div class="manual-nav">
                 <div class="nav-item active"><i class="fa fa-bars" aria-hidden="true"></i> {{i18n .Lang "doc.document"}}</div>
                 <div class="nav-plus pull-right" id="btnAddDocument" data-toggle="tooltip" data-title="{{i18n .Lang "doc.create_doc"}}" data-direction="right"><i class="fa fa-plus" aria-hidden="true"></i></div>
@@ -256,7 +422,7 @@
             </div>
             <div class="manual-tree" id="sidebar"> </div>
         </div>
-        <div class="manual-editor-container" id="manualEditorContainer" style="min-width: 980px;">
+        <div class="manual-editor-container" id="manualEditorContainer">
             <div class="manual-editormd" style="bottom: 0;">
                 <div id="docEditor" class="manual-editormd-active ql-editor ql-blank  editor-content"></div>
                 <div class="manual-editor-status" style="border-top: 1px solid #DDDDDD;">
@@ -480,6 +646,44 @@
                 }catch(e){
                     console.log(e);
                 }
+            }
+        });
+
+        // 移动端目录切换
+        $("#category-toggle").on("click", function() {
+            var $category = $("#manualCategory");
+            var $toggle = $(this);
+            var $icon = $toggle.find("i");
+            
+            $category.toggleClass("show");
+            $toggle.toggleClass("show");
+            
+            if ($category.hasClass("show")) {
+                $icon.removeClass("fa-angle-right").addClass("fa-angle-left");
+            } else {
+                $icon.removeClass("fa-angle-left").addClass("fa-angle-right");
+            }
+        });
+
+        // 点击编辑器区域时收起移动端目录
+        $("#manualEditorContainer").on("click", function() {
+            if (window.innerWidth <= 840) {
+                $("#manualCategory").removeClass("show");
+                var $toggle = $("#category-toggle");
+                $toggle.removeClass("show")
+                    .find("i")
+                    .removeClass("fa-angle-left")
+                    .addClass("fa-angle-right");
+            }
+        });
+
+        // 监听窗口大小变化
+        $(window).on("resize", function() {
+            var isMobile = window.innerWidth <= 840;
+            if (!isMobile) {
+                $("#manualCategory").removeClass("show");
+                $("#category-toggle").removeClass("show")
+                    .find("i").removeClass("fa-angle-left").addClass("fa-angle-right");
             }
         });
     });
