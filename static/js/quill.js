@@ -59,9 +59,22 @@ $(function () {
             toolbar :"#editormd-tools"
         }
     });
+
+    // 添加字数统计功能
+    function updateWordCount() {
+        const text = window.editor.getText().trim();
+        const wordCount = text.length;
+        document.getElementById('wordCount').textContent = `字数：${wordCount}`;
+    }
+
     window.editor.on("text-change",function () {
         resetEditorChanged(true);
+        updateWordCount(); // 在文本变化时更新字数统计
     });
+
+    // 初始化字数统计
+    updateWordCount();
+
     var $editorEle =  $("#editormd-tools");
 
     $editorEle.find(".ql-undo").on("click",function () {

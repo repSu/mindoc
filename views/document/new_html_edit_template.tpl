@@ -353,6 +353,21 @@
                 left: 280px;
             }
         }
+
+        .manual-editor-status {
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background-color: #f5f5f5;
+        }
+
+        .manual-editor-status .item {
+            display: inline-block;
+            padding: 0 10px;
+            font-size: 12px;
+            color: #666;
+        }
     </style>
 </head>
 <body>
@@ -427,6 +442,7 @@
                 <div id="docEditor" class="manual-editormd-active ql-editor ql-blank  editor-content"></div>
                 <div class="manual-editor-status" style="border-top: 1px solid #DDDDDD;">
                     <div id="attachInfo" class="item">0 {{i18n .Lang "doc.attachments"}}</div>
+                    <div id="wordCount" class="item pull-right">字数：0</div>
                 </div>
             </div>
         </div>
