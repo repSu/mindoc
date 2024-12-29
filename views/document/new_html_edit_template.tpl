@@ -386,13 +386,14 @@
             <a href="javascript:;" data-toggle="tooltip" data-title="{{i18n .Lang "doc.redo"}} (Ctrl-Y)" class="ql-redo"><i class="fa fa-repeat last" name="redo" unselectable="on"></i></a>
         </div>
         <div class="editor-group">
-            <select data-toggle="tooltip" data-title="{{i18n .Lang "doc.font_size"}}" title="{{i18n .Lang "doc.font_size"}}" class="ql-size editor-item-select editor-item-single-select"></select>
-        </div>
-        <div class="editor-group">
             <button data-toggle="tooltip" data-title="{{i18n .Lang "doc.bold"}}" class="ql-bold editor-item editor-item-first"></button>
             <button data-toggle="tooltip" data-title="{{i18n .Lang "doc.italic"}}" class="ql-italic editor-item"></button>
+            <button data-toggle="tooltip" data-title="{{i18n .Lang "doc.insert_space"}}" class="ql-insertSpaces editor-item" id="insertSpaces"><i class="fa fa-arrows-h" name="spaces" unselectable="on"></i></button>
             <button data-toggle="tooltip" data-title="{{i18n .Lang "doc.strikethrough"}}" class="ql-strike editor-item"></button>
             <button data-toggle="tooltip" data-title="{{i18n .Lang "doc.underscore"}}" class="ql-underline editor-item editor-item-last"></button>
+        </div>
+        <div class="editor-group">
+            <select data-toggle="tooltip" data-title="{{i18n .Lang "doc.font_size"}}" title="{{i18n .Lang "doc.font_size"}}" class="ql-size editor-item-select editor-item-single-select"></select>
         </div>
         <div class="editor-group">
             <button data-toggle="tooltip" data-title="{{i18n .Lang "doc.h1"}}" class="ql-header editor-item editor-item-first" value="1"></button>
