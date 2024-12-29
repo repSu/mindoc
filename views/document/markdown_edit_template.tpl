@@ -54,14 +54,143 @@
             color: #999999;
             font-weight: 200;
         }
+
+        /* 基础布局 */
+        .m-manual.manual-editor {
+            position: absolute;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            overflow: hidden;
+        }
+
+        /* 工具栏 */
+        .manual-head {
+            position: relative;
+            width: 100%;
+            height: 45px;  /* 固定高度 */
+            background: #fff;
+            border-bottom: 1px solid #ddd;
+            padding: 5px;
+            z-index: 900;
+            overflow-x: auto;
+            overflow-y: hidden;
+            white-space: nowrap;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .manual-head::-webkit-scrollbar {
+            height: 3px;
+        }
+
+        .manual-head::-webkit-scrollbar-thumb {
+            background: rgba(0,0,0,.2);
+            border-radius: 3px;
+        }
+
+        .editormd-group {
+            display: inline-block;
+            float: none;
+            padding: 0 5px;
+        }
+
+        .editormd-group.pull-right {
+            float: none !important;
+        }
+
+        /* 主体内容区 */
+        .manual-body {
+            position: absolute;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            top: 45px;  /* 与工具栏高度对应 */
+            background-color: #fff;
+            overflow: hidden;
+        }
+
+        .manual-category {
+            position: absolute;
+            width: 280px;
+            top: 0;
+            left: 0;
+            bottom: 0;
+            background: #fff;
+            border-right: 1px solid #ddd;
+            overflow: auto;
+        }
+
+        .manual-editor-container {
+            position: absolute;
+            top: 0;
+            left: 280px;
+            right: 0;
+            bottom: 0;
+            overflow: auto;
+        }
+
+        /* 移动端样式 */
+        @media screen and (max-width: 840px) {
+            /* 工具栏响应式 */
+            .manual-head {
+                overflow-x: auto;
+                white-space: nowrap;
+                -webkit-overflow-scrolling: touch;
+            }
+
+            /* 左侧目录 */
+            .manual-category {
+                position: fixed;
+                left: -280px;
+                z-index: 1000;
+                transition: left 0.3s;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.15);
+            }
+
+            .manual-category.show {
+                left: 0;
+            }
+
+            /* 编辑器容器 */
+            .manual-editor-container {
+                left: 0;
+                min-width: auto !important;
+            }
+
+            /* 目录切换按钮 */
+            #category-toggle {
+                position: fixed;
+                left: 0;
+                top: 50%;
+                transform: translateY(-50%);
+                z-index: 1001;
+                padding: 8px;
+                background: #fff;
+                border: 1px solid #ddd;
+                border-left: none;
+                border-radius: 0 4px 4px 0;
+                box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+            }
+
+            #category-toggle.show {
+                left: 280px;
+            }
+        }
+
+        /* PC端额外样式 */
+        @media screen and (min-width: 841px) {
+            #category-toggle {
+                display: none;
+            }
+        }
     </style>
 </head>
 <body>
 
 <div class="m-manual manual-editor">
-    <div class="manual-head" id="editormd-tools" style="min-width: 1200px; position:absolute;">
+    <div class="manual-head" id="editormd-tools">
         <div class="editormd-group">
-            <!--a href="{{urlfor "BookController.Index"}}" data-toggle="tooltip" data-title="{{i18n .Lang "doc.backward"}}"><i class="fa fa-chevron-left" aria-hidden="true"></i></a-->
             <a href="javascript:" onclick="self.location=document.referrer;" data-toggle="tooltip" data-title="{{i18n .Lang "doc.backward"}}"><i class="fa fa-chevron-left" aria-hidden="true"></i></a>
         </div>
         <div class="editormd-group">
@@ -126,6 +255,9 @@
         <div class="clearfix"></div>
     </div>
     <div class="manual-body">
+        <button id="category-toggle" class="btn btn-default btn-sm">
+            <i class="fa fa-angle-right"></i>
+        </button>
         <div class="manual-category" id="manualCategory" style="position:absolute;">
             <div class="manual-nav">
                 <div class="nav-item active"><i class="fa fa-bars" aria-hidden="true"></i> {{i18n .Lang "doc.document"}}</div>
@@ -543,6 +675,60 @@
                 }
             }
         });
+
+        // 移动端目录切换
+        $("#category-toggle").on("click", function() {
+            var $category = $("#manualCategory");
+            var $toggle = $(this);
+            var $icon = $toggle.find("i");
+            
+            $category.toggleClass("show");
+            $toggle.toggleClass("show");
+            
+            if ($category.hasClass("show")) {
+                $icon.removeClass("fa-angle-right").addClass("fa-angle-left");
+            } else {
+                $icon.removeClass("fa-angle-left").addClass("fa-angle-right");
+            }
+        });
+
+        // 点击文档区域时收起移动端目录
+        $("#manualEditorContainer").on("click", function() {
+            if (window.innerWidth <= 840) {
+                $("#manualCategory").removeClass("show");
+                var $toggle = $("#category-toggle");
+                $toggle.removeClass("show")
+                    .find("i")
+                    .removeClass("fa-angle-left")
+                    .addClass("fa-angle-right");
+            }
+        });
+
+        // 监听窗口大小变化
+        $(window).on("resize", function() {
+            var isMobile = window.innerWidth <= 840;
+            if (!isMobile) {
+                $("#manualCategory").removeClass("show");
+                $("#category-toggle").removeClass("show")
+                    .find("i").removeClass("fa-angle-left").addClass("fa-angle-right");
+            }
+        });
+
+        // 调整内容区域位置
+        function adjustContentPosition() {
+            var toolbarHeight = $('.manual-head').outerHeight();
+            $('.manual-body').css('top', toolbarHeight + 'px');
+        }
+        
+        // 页面加载和窗口大小改变时调整
+        adjustContentPosition();
+        $(window).on('resize', adjustContentPosition);
+        
+        // 监听工具栏高度变化
+        var toolbarObserver = new ResizeObserver(function() {
+            adjustContentPosition();
+        });
+        toolbarObserver.observe($('.manual-head')[0]);
     });
 </script>
 </body>
