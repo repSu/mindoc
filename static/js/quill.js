@@ -62,62 +62,37 @@ $(function () {
         }
     });
 
-    // 添加插入空格功能
-    let pressTimer;
-    let hasMove = false;
-    const defaultSpaces = 7;
-
-    $("#insertSpaces").on("mousedown touchstart", function(e) {
-        e.preventDefault();
-        hasMove = false;
-        
-        pressTimer = setTimeout(() => {
-            layer.prompt({
-                title: window.editormdLocales[window.lang].enterSpacesCount,
-                formType: 0,
-                value: defaultSpaces.toString()
-            }, function(value, index, elem) {
-                const spaces = ' '.repeat(parseInt(value) || defaultSpaces);
-                const range = window.editor.getSelection(true);
-                if (range) {
-                    window.editor.insertText(range.index, spaces);
-                }
-                layer.close(index);
-            });
-        }, 500); // 500ms 长按触发
-    }).on("mouseup touchend", function(e) {
-        e.preventDefault();
-        clearTimeout(pressTimer);
-        
-        // 如果没有移动过且不是长按，则执行点击插入默认空格
-        if (!hasMove) {
-            const spaces = ' '.repeat(defaultSpaces);
-            const range = window.editor.getSelection(true);
-            if (range) {
-                window.editor.insertText(range.index, spaces);
-            }
+// 添加插入空格功能
+$("#insertSpaces").on("click", function(e) {
+    e.preventDefault();
+    e.stopPropagation();
+    layer.prompt({
+        title: window.editormdLocales[window.lang].enterSpacesCount,
+        formType: 0,
+        value: '7'
+    }, function(value, index, elem) {
+        const spaces = ' '.repeat(parseInt(value) || 0);
+        const range = window.editor.getSelection(true);
+        if (range) {
+            window.editor.insertText(range.index, spaces);
         }
-    }).on("mousemove touchmove", function(e) {
-        hasMove = true;
-    }).on("mouseleave touchcancel", function(e) {
-        e.preventDefault();
-        clearTimeout(pressTimer);
-        hasMove = false;
+        layer.close(index);
     });
+});
 
-    // 设置默认字体大小样式
-    const style = document.createElement('style');
-    style.innerHTML = `
-        @media screen and (max-width: 840px) {
-            #docEditor p {
-                font-size: 17px !important;
-                margin-bottom: 14px;
-                line-height: 1.7em;
-                color: #5D5D5D;
-            }
+// 设置默认字体大小样式
+const style = document.createElement('style');
+style.innerHTML = `
+    @media screen and (max-width: 840px) {
+        #docEditor p {
+            font-size: 17px !important;
+            margin-bottom: 14px;
+            line-height: 1.7em;
+            color: #5D5D5D;
         }
-    `;
-    document.head.appendChild(style);
+    }
+`;
+document.head.appendChild(style);
 
     // 添加字数统计功能
     function updateWordCount() {
