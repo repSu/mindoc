@@ -97,6 +97,7 @@
             background: #fff;
             border-radius: 0;
             font-size: 14px
+            font-size: 14px
         }
         .ql-snow .ql-picker.ql-expanded .ql-picker-options{
             margin-top: 5px;
